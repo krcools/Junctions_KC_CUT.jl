@@ -62,11 +62,13 @@ git-tree-sha1 = "b25e88db7944f98789130d7b503276bc34bc098e"
 uuid = "bf4720bc-e11a-5d0c-854e-bdca1663c893"
 version = "0.1.0"
 
-[[deps.BEAST]]
-deps = ["BlockArrays", "CollisionDetection", "Combinatorics", "CompScienceMeshes", "Compat", "Distributed", "FFTW", "FastGaussQuadrature", "FillArrays", "InteractiveUtils", "IterativeSolvers", "LiftedMaps", "LinearAlgebra", "LinearMaps", "Polyester", "SauterSchwab3D", "SauterSchwabQuadrature", "SharedArrays", "SparseArrays", "SparseMatrixDicts", "SpecialFunctions", "StaticArrays", "WiltonInts84"]
-path = "/home/em/krcools/dev/BEAST"
+[[BEAST]]
+deps = ["BlockArrays", "CollisionDetection", "Combinatorics", "CompScienceMeshes", "Compat", "Distributed", "FFTW", "FastGaussQuadrature", "FillArrays", "InteractiveUtils", "IterativeSolvers", "LiftedMaps", "LinearAlgebra", "LinearMaps", "SauterSchwab3D", "SauterSchwabQuadrature", "SharedArrays", "SparseArrays", "SparseMatrixDicts", "SpecialFunctions", "StaticArrays", "WiltonInts84"]
+git-tree-sha1 = "18cd16c1014d55ab74a705dbc5f104d0873f84c4"
+repo-rev = "master"
+repo-url = "https://github.com/krcools/BEAST.jl.git"
 uuid = "bb4162c7-ba94-5a20-af32-d8ec4428bdd1"
-version = "1.4.0"
+version = "1.5.0-dev"
 
 [[deps.Base64]]
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
@@ -77,13 +79,7 @@ git-tree-sha1 = "1289b57e8cf019aede076edab0587eb9644175bd"
 uuid = "9e28174c-4ba2-5203-b857-d8d62c4213ee"
 version = "1.0.2"
 
-[[deps.BitTwiddlingConvenienceFunctions]]
-deps = ["Static"]
-git-tree-sha1 = "28bbdbf0354959db89358d1d79d421ff31ef0b5e"
-uuid = "62783981-4cbd-42fc-bca8-16325de8dc4b"
-version = "0.1.3"
-
-[[deps.Blink]]
+[[Blink]]
 deps = ["Base64", "BinDeps", "Distributed", "JSExpr", "JSON", "Lazy", "Logging", "MacroTools", "Mustache", "Mux", "Reexport", "Sockets", "WebIO", "WebSockets"]
 git-tree-sha1 = "08d0b679fd7caa49e2bca9214b131289e19808c0"
 uuid = "ad839575-38b3-5650-b840-f874b8c74a25"
@@ -101,13 +97,7 @@ git-tree-sha1 = "19a35467a82e236ff51bc17a3a44b69ef35185a2"
 uuid = "6e34b625-4abd-537c-b88f-471c36dfa7a0"
 version = "1.0.8+0"
 
-[[deps.CPUSummary]]
-deps = ["CpuId", "IfElse", "Static"]
-git-tree-sha1 = "0eaf4aedad5ccc3e39481db55d72973f856dc564"
-uuid = "2a0fbf3d-bb9c-48f3-b0a9-814d99fd7ab9"
-version = "0.1.22"
-
-[[deps.Cairo]]
+[[Cairo]]
 deps = ["Cairo_jll", "Colors", "Glib_jll", "Graphics", "Libdl", "Pango_jll"]
 git-tree-sha1 = "d0b3f8b4ad16cb0a2988c6788646a5e6a17b6b1b"
 uuid = "159f3aea-2a34-519c-b102-8c37f9878175"
@@ -131,13 +121,7 @@ git-tree-sha1 = "1e315e3f4b0b7ce40feded39c73049692126cf53"
 uuid = "9e997f8a-9a97-42d5-a9f1-ce6bfc15e2c0"
 version = "0.1.3"
 
-[[deps.CloseOpenIntervals]]
-deps = ["ArrayInterface", "Static"]
-git-tree-sha1 = "c892b6671c36d64a4e3caf70ffd57f9d24f4117a"
-uuid = "fb6a15b2-703c-40df-9091-08a04967cfa9"
-version = "0.1.7"
-
-[[deps.ClusterTrees]]
+[[ClusterTrees]]
 deps = ["DelimitedFiles", "LinearAlgebra", "Pkg"]
 git-tree-sha1 = "4114d60c95974edf9272d88571d14abeed598942"
 uuid = "5100927d-02aa-593a-b4f9-7235df19f0db"
@@ -637,13 +621,7 @@ git-tree-sha1 = "46a39b9c58749eefb5f2dc1178cb8fab5332b1ab"
 uuid = "23fbe1c1-3f47-55db-b15f-69d7ec21a316"
 version = "0.15.15"
 
-[[deps.LayoutPointers]]
-deps = ["ArrayInterface", "LinearAlgebra", "ManualMemory", "SIMDTypes", "Static"]
-git-tree-sha1 = "3da92dc6d4bce776cc850c18274a7508b8d752ef"
-uuid = "10f19ff3-798f-405d-979b-55457f8fc047"
-version = "0.1.7"
-
-[[deps.Lazy]]
+[[Lazy]]
 deps = ["MacroTools"]
 git-tree-sha1 = "1370f8202dac30758f3c345f9909b97f53d87d3f"
 uuid = "50d2b5c4-7a5e-59d5-8109-a42b560f39c0"
@@ -738,7 +716,7 @@ git-tree-sha1 = "7f3efec06033682db852f8b3bc3c1d2b0a0ab066"
 uuid = "38a345b3-de98-5d2b-a5d3-14cd9215e700"
 version = "2.36.0+0"
 
-[[deps.LiftedMaps]]
+[[LiftedMaps]]
 deps = ["BlockArrays", "LinearAlgebra", "LinearMaps"]
 git-tree-sha1 = "79c37b23143418e278567eb54975ff61ceeda090"
 uuid = "d22a30c1-52ac-4762-a8c9-5838452405e0"
@@ -793,12 +771,7 @@ git-tree-sha1 = "3d3e902b31198a27340d0bf00d6ac452866021cf"
 uuid = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
 version = "0.5.9"
 
-[[deps.ManualMemory]]
-git-tree-sha1 = "bcaef4fc7a0cfe2cba636d84cda54b5e4e4ca3cd"
-uuid = "d125e4d3-2237-4719-b19c-fa641b8a4667"
-version = "0.1.8"
-
-[[deps.Markdown]]
+[[Markdown]]
 deps = ["Base64"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 
@@ -979,19 +952,7 @@ git-tree-sha1 = "d457f881ea56bbfa18222642de51e0abf67b9027"
 uuid = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 version = "1.29.0"
 
-[[deps.Polyester]]
-deps = ["ArrayInterface", "BitTwiddlingConvenienceFunctions", "CPUSummary", "IfElse", "ManualMemory", "PolyesterWeave", "Requires", "Static", "StrideArraysCore", "ThreadingUtilities"]
-git-tree-sha1 = "b5ef32913639cb417e967da27f98402938408127"
-uuid = "f517fe37-dbe3-4b94-8317-1923a5111588"
-version = "0.6.11"
-
-[[deps.PolyesterWeave]]
-deps = ["BitTwiddlingConvenienceFunctions", "CPUSummary", "IfElse", "Static", "ThreadingUtilities"]
-git-tree-sha1 = "7e597df97e46ffb1c8adbaddfa56908a7a20194b"
-uuid = "1d0040c9-8b98-4ee7-8388-3f51789ca0ad"
-version = "0.1.5"
-
-[[deps.Preferences]]
+[[Preferences]]
 deps = ["TOML"]
 git-tree-sha1 = "47e5f437cc0e7ef2ce8406ce1e7e24d44915f88d"
 uuid = "21216c6a-2e73-6563-6e65-726566657250"
@@ -1067,12 +1028,7 @@ version = "6.1.3+0"
 [[deps.SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 
-[[deps.SIMDTypes]]
-git-tree-sha1 = "330289636fb8107c5f32088d2741e9fd7a061a5c"
-uuid = "94e857df-77ce-4151-89e5-788b33177be4"
-version = "0.1.0"
-
-[[deps.SauterSchwab3D]]
+[[SauterSchwab3D]]
 deps = ["CompScienceMeshes", "FastGaussQuadrature", "GrundmannMoeller", "LinearAlgebra", "ShunnHamQuadrature", "StaticArrays"]
 git-tree-sha1 = "e5c1dce465dd31be2e21761922ceab26ec28db7c"
 uuid = "0a13313b-1c00-422e-8263-562364ed9544"
@@ -1162,13 +1118,7 @@ git-tree-sha1 = "8977b17906b0a1cc74ab2e3a05faa16cf08a8291"
 uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 version = "0.33.16"
 
-[[deps.StrideArraysCore]]
-deps = ["ArrayInterface", "CloseOpenIntervals", "IfElse", "LayoutPointers", "ManualMemory", "SIMDTypes", "Static", "ThreadingUtilities"]
-git-tree-sha1 = "710ec0f0e9be327b92975d7480ed6759ade69ec3"
-uuid = "7792a7ef-975c-4747-a70f-980b88e8d1da"
-version = "0.3.9"
-
-[[deps.StringEncodings]]
+[[StringEncodings]]
 deps = ["Libiconv_jll"]
 git-tree-sha1 = "50ccd5ddb00d19392577902f0079267a72c5ab04"
 uuid = "69024149-9ee7-55f6-a4c4-859efe599b68"
@@ -1214,13 +1164,7 @@ version = "0.1.1"
 deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
-[[deps.ThreadingUtilities]]
-deps = ["ManualMemory"]
-git-tree-sha1 = "f8629df51cab659d70d2e5618a430b4d3f37f2c3"
-uuid = "8290d209-cae3-49c0-8002-c8c24d57dab5"
-version = "0.5.0"
-
-[[deps.TranscodingStreams]]
+[[TranscodingStreams]]
 deps = ["Random", "Test"]
 git-tree-sha1 = "216b95ea110b5972db65aa90f88d8d89dcb8851c"
 uuid = "3bb67fe8-82b1-5028-8e26-92a6c54297fa"

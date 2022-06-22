@@ -7,7 +7,8 @@
 using BEAST, CompScienceMeshes, LinearAlgebra
 using JLD2
 
-include("utils.jl")
+# include("utils.jl")
+using Junctions_KC_CUT
 
 using AdaptiveCrossApproximation
 AdaptiveCrossApproximation.blockassembler(op,Y,X;quadstrat) = BEAST.blockassembler(op,Y,X;quadstrat)
