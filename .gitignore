@@ -1,3 +1,5 @@
 tmp/
 figs/
 output/
+*.jld2
+Manifest.toml

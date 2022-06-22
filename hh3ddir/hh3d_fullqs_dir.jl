@@ -7,7 +7,13 @@ using JLD2
 using Plots
 plotly()
 
-include("utils.jl")
+using AdaptiveCrossApproximation
+AdaptiveCrossApproximation.blockassembler(op,Y,X;quadstrat) = BEAST.blockassembler(op,Y,X;quadstrat)
+AdaptiveCrossApproximation.scalartype(op,Y,X) = BEAST.scalartype(op,Y,X)
+AdaptiveCrossApproximation.positions(X) = BEAST.positions(X)
+AdaptiveCrossApproximation.numfunctions(X) = BEAST.numfunctions(X)
+
+include("../src/utils.jl")
 
 width, height = 1.0, 0.5
 
@@ -20,7 +26,6 @@ uⁱ = Helmholtz3D.planewave(wavenumber=κ, direction=normalize(ŷ + ẑ))
 e = ∂n(uⁱ)
 f = BEAST.ScalarTrace(uⁱ)
 
-
 nearstrat = BEAST.DoubleNumWiltonSauterQStrat(1, 2, 2, 3, 3, 3, 3, 3)
 farstrat  = BEAST.DoubleNumQStrat(1,2)
 
@@ -28,14 +33,14 @@ farstrat  = BEAST.DoubleNumQStrat(1,2)
 # BEAST.@defaultquadstrat (HS, Y, Y) BEAST.DoubleNumWiltonSauterQStrat(1, 1, -1, -1, 2, 2, 2, 2)
 
 dmat(op,tfs,bfs) = BEAST.assemble(op,tfs,bfs; quadstrat=nearstrat)
-# hmat(op,tfs,bfs) = AdaptiveCrossApproximation.h1compress(op,tfs,bfs; nearstrat=nearstrat,farstrat=farstrat)
-mat = dmat
+hmat(op,tfs,bfs) = AdaptiveCrossApproximation.h1compress(op,tfs,bfs; nearstrat=nearstrat,farstrat=farstrat)
+mat = hmat
 
 hs = [0.1, 0.05, 0.025, 0.0125]
 iters_classic = Int[]
 iters_precond = Int[]
 
-h = 0.025
+h = 0.0125
 # for h in hs
     G1 = meshrectangle(width, height, h)
     G2 = CompScienceMeshes.rotate(G1, 1.0π * x̂)
@@ -66,12 +71,15 @@ h = 0.025
     X = X12 × X23 × X31
     Y = Y12 × Y23 × Y31
 
+    @show numfunctions(X)
+    sleep(1)
+
     @hilbertspace j[1:3]
     @hilbertspace k[1:3]
 
     fx = assemble(@discretise(f[k], k ∈ X))
 
-    WSxx = assemble(@discretise(WS[k,j], j ∈ X, k ∈ X))
+    WSxx = assemble(@discretise(WS[k,j], j ∈ X, k ∈ X); materialize=mat)
 
     Nxy = assemble(@discretise(BEAST.diag(N)[j,k], j∈X, k∈Y))
     Dyx = BEAST.GMRESSolver(Nxy, tol=2e-12, restart=250, verbose=false)
