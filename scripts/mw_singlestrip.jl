@@ -1,15 +1,10 @@
-import Pkg
-Pkg.activate(".")
+using DrWatson
+@quickactivate "Junctions_KC_CUT"
 
 using BEAST, CompScienceMeshes, LinearAlgebra
 using JLD2
 
-using Plots
-plotly()
-
-include("utils.jl")
-
-
+using Junctions_KC_CUT
 
 using AdaptiveCrossApproximation
 AdaptiveCrossApproximation.blockassembler(op,Y,X;quadstrat) = BEAST.blockassembler(op,Y,X;quadstrat)
@@ -17,29 +12,21 @@ AdaptiveCrossApproximation.scalartype(op,Y,X) = BEAST.scalartype(op,Y,X)
 AdaptiveCrossApproximation.positions(X) = BEAST.positions(X)
 AdaptiveCrossApproximation.numfunctions(X) = BEAST.numfunctions(X)
 
-
 width, height = 1.0, 0.5
+overlap = 0.2
 
-κ = 1.0
-SL = Maxwell3D.singlelayer(wavenumber=κ)
-N = NCross()
+Top = BEAST.MWSingleLayer3D
+Tsp = BEAST.RTRefSpace
+Trf = BEAST.RTRefSpace
 
-E = Maxwell3D.planewave(direction=ẑ, polarization=x̂, wavenumber=κ)
-e = (n × E) × n;
-
-
-Tp = typeof(SL)
-X0 = raviartthomas(meshsphere(radius=1.0, h=0.35))
-x0 = BEAST.refspace(X0)
-
-function BEAST.quaddata(op::Tp, tref::typeof(x0), bref::typeof(x0),
+function BEAST.quaddata(op::Top, tref::Trf, bref::Trf,
     tels, bels, qs::BEAST.DoubleNumQStrat)
 
     qs = BEAST.DoubleNumWiltonSauterQStrat(qs.outer_rule, qs.inner_rule, 1, 1, 1, 1, 1, 1)
     BEAST.quaddata(op, tref, bref, tels, bels, qs)
 end
 
-function BEAST.quadrule(op::Tp, tref::typeof(x0), bref::typeof(x0),
+function BEAST.quadrule(op::Top, tref::Trf, bref::Trf,
     i ,τ, j, σ, qd, qs::BEAST.DoubleNumQStrat)
 
     return BEAST.DoubleQuadRule(
@@ -50,20 +37,22 @@ end
 nearstrat = BEAST.DoubleNumWiltonSauterQStrat(1, 2, 2, 3, 3, 3, 3, 3)
 farstrat  = BEAST.DoubleNumQStrat(1,2)
 
-# nearstrat = BEAST.DoubleNumWiltonSauterQStrat{Int64, Int64}(1, 2, 3, 4, 3, 3, 3, 3)
-# farstrat = BEAST.DoubleNumWiltonSauterQStrat{Int64, Int64}(1, 2, 3, 4, 3, 3, 3, 3)
-hmat(op,tfs,bfs) = AdaptiveCrossApproximation.h1compress(op,tfs,bfs;nearstrat=nearstrat,farstrat=farstrat)
 dmat(op,tfs,bfs) = BEAST.assemble(op,tfs,bfs; quadstrat=nearstrat)
+hmat(op,tfs,bfs) = AdaptiveCrossApproximation.h1compress(op,tfs,bfs;
+    nearstrat=nearstrat,farstrat=farstrat)
+mat = dmat
 
+phi = pi/2
+thetas = range(0,pi,length=200)
+farpts = [10*point(cos(phi)*sin(theta), sin(phi)*sin(theta), cos(theta)) for theta in thetas]
 
-hs = [0.2, 0.1, 0.05, 0.025, 0.0125]
-# hs = [0.2, 0.1, 0.05, 0.025, 0.0125, 0.00625]
-iters_classic = Int[]
-iters_precond = Int[]
+function runsim(;h, κ)
 
+    SL = Maxwell3D.singlelayer(wavenumber=κ)
+    N = NCross()
+    E = Maxwell3D.planewave(direction=ẑ, polarization=x̂, wavenumber=κ)
+    e = (n × E) × n;
 
-h = last(hs)
-# for h in hs
     G1 = meshrectangle(width, height, h)
     G2 = CompScienceMeshes.rotate(G1, 0.5π * x̂)
     G3 = CompScienceMeshes.rotate(G1, 1.0π * x̂)
@@ -122,40 +111,21 @@ h = last(hs)
     @show numfunctions(Y)
 
 
-    # @hilbertspace j
-    # @hilbertspace k
-    # mtefie = @discretise(
-    #     SL[k,j] == e[k],
-    #     j ∈ X, k ∈ X);
-        
-    # BEAST.@defaultquadstrat (SL,X12,X12) BEAST.DoubleNumWiltonSauterQStrat{Int64, Int64}(2, 3, 6, 7, 5, 5, 4, 3)
-    # BEAST.@defaultquadstrat (SL,Y12,Y12) BEAST.DoubleNumWiltonSauterQStrat{Int64, Int64}(1, 2, 3, 4, 3, 3, 3, 3)
-    
     @hilbertspace p[1:2]
     @hilbertspace q[1:2]
     Skj = @discretise SL[p,q] p∈X q∈X
-    Sxx = assemble(Skj.bilform, Skj.test_space_dict, Skj.trial_space_dict; materialize=hmat)
-    # Sxx = BEAST.assemble(Skj; materialize=hmat)
-    # ex = BEAST.rhs(mtefie)
+    Sxx = assemble(Skj.bilform, Skj.test_space_dict, Skj.trial_space_dict; materialize=dmat)
     ex = BEAST.assemble(@discretise e[p] p∈X)
     
     @hilbertspace j[1:2]
     @hilbertspace k[1:2]
 
     Nxy = assemble(@discretise(BEAST.diag(N)[j,k], j∈X, k∈Y))
-    Dyx = BEAST.GMRESSolver(Nxy, tol=2e-5, restart=250, verbose=false)
-    Dxy = BEAST.GMRESSolver(transpose(Nxy), tol=2e-5, restart=250, verbose=false)
-
-    # N1 = assemble(N, X12, Y12)
-    # N2 = assemble(N, X23, Y23)
-    # iN = blkdiagm(inv(Matrix(N1)), inv(Matrix(N2)))
-
-    # precond = @discretise(
-    #     SL[k[1],j[1]] + SL[k[2],j[2]] == e[k[1]] + e[k[2]],
-    #     j[1] ∈ Y12, j[2] ∈ Y23, k[1] ∈ Y12, k[2] ∈ Y23,);
+    Dyx = BEAST.GMRESSolver(Nxy, tol=2e-12, restart=250, verbose=false)
+    Dxy = BEAST.GMRESSolver(transpose(Nxy), tol=2e-12, restart=250, verbose=false)
 
     diagSkj = @discretise BEAST.diag(SL)[p,q] p∈Y q∈Y
-    Syy = BEAST.assemble(diagSkj; materialize=hmat);
+    Syy = BEAST.assemble(diagSkj; materialize=dmat);
 
     # P = iN' * Syy * iN
     P = Dxy * Syy * Dyx
@@ -166,61 +136,76 @@ h = last(hs)
     @show ch1.iters
     @show ch2.iters
 
-    push!(iters_classic, ch1.iters)
-    push!(iters_precond, ch2.iters)
-# end
+    Φ, Θ = [0.0], range(0,stop=π,length=100)
+    pts = [point(cos(ϕ)*sin(θ), sin(ϕ)*sin(θ), cos(θ)) for ϕ in Φ for θ in Θ]
 
-plot(log10.(ch1.data[:resnorm]), label="MT")
-plot!(log10.(ch2.data[:resnorm]), label="MT diag. Cald. precond.")
+    near1 = potential(MWFarField3D(wavenumber=κ), pts, u1, X)
+    near2 = ffd_strip_pc = potential(MWFarField3D(wavenumber=κ), pts, u2, X)
 
-error()
+    u1, ch1.iters, u2, ch2.iters, near1, near2, X
+end
 
-#' Check for correctness
 
-Φ, Θ = [0.0], range(0,stop=π,length=100)
-pts = [point(cos(ϕ)*sin(θ), sin(ϕ)*sin(θ), cos(θ)) for ϕ in Φ for θ in Θ]
+function makesim(d::Dict)
+    @unpack h, κ = d
+    u1, ch1, u2, ch2, near1, near2, X = runsim(;h, κ)
+    fulld = merge(d, Dict(
+        "u1" => u1,
+        "u2" => u2,
+        "ch1" => ch1,
+        "ch2" => ch2,
+        "near1" => near1,
+        "near2" => near2
+    ))
+end
 
-ffd_strip_np    = potential(MWFarField3D(wavenumber=κ), pts, u1, X)
-ffd_strip_pc = potential(MWFarField3D(wavenumber=κ), pts, u2, X)
+method = splitext(basename(@__FILE__))[1]
+h = [0.1, 0.05, 0.025, 0.0125]
+κ = [1.0, 10.0]
 
-plot!(norm.(ffd_strip_np), label="MT")
-scatter!(norm.(ffd_strip_pc), label="MT - diag. Cald. precond.")
+params = @strdict h κ
+dicts = dict_list(params)
+for (i,d) in enumerate(dicts)
+    @show d
+    f = makesim(d)
+    @tagsave(datadir("simulations", method, savename(d,"jld2")), f)
+end
 
 #' Visualise the spectrum
 
-mSxx = BEAST.convert_to_dense(Sxx)
-mSyy = BEAST.convert_to_dense(Syy)
+# mSxx = BEAST.convert_to_dense(Sxx)
+# mSyy = BEAST.convert_to_dense(Syy)
 
-Z = mSxx
-W = iN' * mSyy * iN * mSxx;
+# Z = mSxx
+# W = iN' * mSyy * iN * mSxx;
 
-wZ = eigvals(Matrix(Z))
-wW = eigvals(Matrix(W))
+# wZ = eigvals(Matrix(Z))
+# wW = eigvals(Matrix(W))
 
-plot(exp.(im*range(0,2pi,length=200)))
-scatter!(wZ)
-scatter!(wW)
+# plot(exp.(im*range(0,2pi,length=200)))
+# scatter!(wZ)
+# scatter!(wW)
 
 
 # Study the various kernels
-HS = Maxwell3D.singlelayer(gamma=0.0, alpha=0.0, beta=1.0)
-Id = BEAST.Identity()
+# HS = Maxwell3D.singlelayer(gamma=0.0, alpha=0.0, beta=1.0)
+# Id = BEAST.Identity()
 
-Z12 = BEAST.lagrangecxd0(G12)
-Z23 = BEAST.lagrangecxd0(Ĝ23)
-Z = Z12 × Z23
+# Z12 = BEAST.lagrangecxd0(G12)
+# Z23 = BEAST.lagrangecxd0(Ĝ23)
+# Z = Z12 × Z23
 
-W12 = BEAST.duallagrangecxd0(G12)
-W23 = BEAST.duallagrangecxd0(Ĝ23)
-W = W12 × W23
+# W12 = BEAST.duallagrangecxd0(G12)
+# W23 = BEAST.duallagrangecxd0(Ĝ23)
+# W = W12 × W23
 
-DX = assemble(Id, Z, divergence(X))
-HX = assemble(HS, X, X)
+# DX = assemble(Id, Z, divergence(X))
+# HX = assemble(HS, X, X)
 
-DY = assemble(Id, W, divergence(Y))
-HY = assemble(HS, Y, Y)
+# DY = assemble(Id, W, divergence(Y))
+# HY = assemble(HS, Y, Y)
 
-Nx = BEAST.NCross()
-NYX = assemble(Nx, Y, X)
+# Nx = BEAST.NCross()
+# NYX = assemble(Nx, Y, X)
 
-Q = HY * iN * HX
+# Q = HY * iN * HX
