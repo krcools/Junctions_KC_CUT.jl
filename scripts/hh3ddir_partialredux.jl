@@ -6,40 +6,40 @@ using JLD2
 
 using Junctions_KC_CUT
 
-using AdaptiveCrossApproximation
-AdaptiveCrossApproximation.blockassembler(op,Y,X;quadstrat) = BEAST.blockassembler(op,Y,X;quadstrat)
-AdaptiveCrossApproximation.scalartype(op,Y,X) = BEAST.scalartype(op,Y,X)
-AdaptiveCrossApproximation.positions(X) = BEAST.positions(X)
-AdaptiveCrossApproximation.numfunctions(X) = BEAST.numfunctions(X)
+# using AdaptiveCrossApproximation
+# AdaptiveCrossApproximation.blockassembler(op,Y,X;quadstrat) = BEAST.blockassembler(op,Y,X;quadstrat)
+# AdaptiveCrossApproximation.scalartype(op,Y,X) = BEAST.scalartype(op,Y,X)
+# AdaptiveCrossApproximation.positions(X) = BEAST.positions(X)
+# AdaptiveCrossApproximation.numfunctions(X) = BEAST.numfunctions(X)
 
-width, height = 1.0, 0.5
-overlap = 0.2
+# width, height = 1.0, 0.5
+# overlap = 0.2
 
-Top = BEAST.Helmholtz3DOp
-Tsp = BEAST.LagrangeBasis
-Trf = BEAST.LagrangeRefSpace
+# Top = BEAST.Helmholtz3DOp
+# Tsp = BEAST.LagrangeBasis
+# Trf = BEAST.LagrangeRefSpace
 
-function BEAST.quaddata(op::Top, tref::Trf, bref::Trf,
-    tels, bels, qs::BEAST.DoubleNumQStrat)
+# function BEAST.quaddata(op::Top, tref::Trf, bref::Trf,
+#     tels, bels, qs::BEAST.DoubleNumQStrat)
 
-    qs = BEAST.DoubleNumWiltonSauterQStrat(qs.outer_rule, qs.inner_rule, 1, 1, 1, 1, 1, 1)
-    BEAST.quaddata(op, tref, bref, tels, bels, qs)
-end
+#     qs = BEAST.DoubleNumWiltonSauterQStrat(qs.outer_rule, qs.inner_rule, 1, 1, 1, 1, 1, 1)
+#     BEAST.quaddata(op, tref, bref, tels, bels, qs)
+# end
 
-function BEAST.quadrule(op::Top, tref::Trf, bref::Trf,
-    i ,τ, j, σ, qd, qs::BEAST.DoubleNumQStrat)
+# function BEAST.quadrule(op::Top, tref::Trf, bref::Trf,
+#     i ,τ, j, σ, qd, qs::BEAST.DoubleNumQStrat)
 
-    return BEAST.DoubleQuadRule(
-        qd.tpoints[1,i],
-        qd.bpoints[1,j])
-end
+#     return BEAST.DoubleQuadRule(
+#         qd.tpoints[1,i],
+#         qd.bpoints[1,j])
+# end
 
 nearstrat = BEAST.DoubleNumWiltonSauterQStrat(1, 2, 2, 3, 3, 3, 3, 3)
-farstrat  = BEAST.DoubleNumQStrat(1,2)
+# farstrat  = BEAST.DoubleNumQStrat(1,2)
 
 dmat(op,tfs,bfs) = BEAST.assemble(op,tfs,bfs; quadstrat=nearstrat)
-hmat(op,tfs,bfs) = AdaptiveCrossApproximation.h1compress(op,tfs,bfs;
-    nearstrat=nearstrat,farstrat=farstrat)
+# hmat(op,tfs,bfs) = AdaptiveCrossApproximation.h1compress(op,tfs,bfs;
+#     nearstrat=nearstrat,farstrat=farstrat)
 mat = dmat
 
 phi = pi/2
